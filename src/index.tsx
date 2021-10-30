@@ -9,6 +9,7 @@ import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
+    <CssBaseline />
     <Provider store={store}>
       <App />
     </Provider>
