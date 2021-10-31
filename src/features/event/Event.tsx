@@ -4,6 +4,85 @@ import { formatDistanceToNow, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
 import { UserIcon, PhoneIcon, MailIcon } from "@heroicons/react/solid"
 import Card from "../../ui/Card"
+import CenterAlign from "../../ui/CenterAlign"
+import { useState } from "react"
+import { RadioGroup } from "@headlessui/react"
+
+type CheckIconProps = {
+  className: string
+}
+
+function CheckIcon(props: CheckIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <circle cx={12} cy={12} r={12} fill="#000" opacity="0.2" />
+      <path
+        d="M7 13l3 3 7-7"
+        stroke="#000"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+type KindGroupOptionProps = {
+  bg: string
+  label: string
+  value: string
+}
+
+function KindGroupOption({ bg, label, value }: KindGroupOptionProps) {
+  return (
+    <div className={`py-2 px-4 ${bg} rounded-md shadow-md font-bold`}>
+      <RadioGroup.Option value={value}>
+        {({ checked }) => (
+          <div className="flex flex-row w-64">
+            <div className="flex-grow">{label}</div>
+            {checked && (
+              <div className="flex-shrink-0">
+                <CheckIcon className="w-6 h-6" />
+              </div>
+            )}
+          </div>
+        )}
+      </RadioGroup.Option>
+    </div>
+  )
+}
+
+function KindGroup() {
+  let [group, setGroup] = useState(undefined)
+
+  return (
+    <div className="flex justify-center py-6 space-x-2">
+      <RadioGroup value={group} onChange={setGroup}>
+        <RadioGroup.Label className="sr-only">
+          Le type d'évènement
+        </RadioGroup.Label>
+        <div className="flex flex-col space-y-4">
+          <KindGroupOption bg="bg-amber-200" label="Passage" value="passage" />
+          <KindGroupOption bg="bg-cyan-200" label="Téléphone" value="phone" />
+          <KindGroupOption bg="bg-purple-200" label="Email" value="mail" />
+        </div>
+      </RadioGroup>
+    </div>
+  )
+}
+
+function NewEventForm() {
+  return (
+    <div className="w-96">
+      <div className="uppercase tracking-wider text-xs font-bold">
+        Ajouter un nouvel évènement
+      </div>
+      <div>
+        <KindGroup />
+      </div>
+    </div>
+  )
+}
 
 type EventProps = {
   event: EventType
@@ -122,10 +201,16 @@ function EventList() {
 
 export default function EventPage() {
   return (
+    <>
       <CenterAlign>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
-        <EventList />
-      </div>
+        <NewEventForm />
       </CenterAlign>
+      <div className="my-24"></div>
+      <CenterAlign>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
+          <EventList />
+        </div>
+      </CenterAlign>
+    </>
   )
 }
