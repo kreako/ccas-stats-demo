@@ -124,7 +124,7 @@ export default function EventPage() {
   return (
     <div className="flex">
       <div className="flex-grow"></div>
-      <div className="flex flex-col justify-center flex-grow-0 space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
         <EventList />
       </div>
       <div className="flex-grow"></div>
