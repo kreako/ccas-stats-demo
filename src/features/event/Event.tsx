@@ -92,7 +92,7 @@ function EventList() {
 
 export default function EventPage() {
   return (
-    <>
+    <div className="mt-8">
       <CenterAlign>
         <NewEventForm />
       </CenterAlign>
@@ -102,6 +102,6 @@ export default function EventPage() {
           <EventList />
         </div>
       </CenterAlign>
-    </>
+    </div>
   )
 }
