@@ -5,6 +5,7 @@ import { fr } from "date-fns/locale"
 import { UserIcon, PhoneIcon, MailIcon } from "@heroicons/react/solid"
 import Card from "../../ui/Card"
 import CenterAlign from "../../ui/CenterAlign"
+import NewEventForm from "./EventForm"
 import { ageToStr, genderToStr, kindToStr } from "./util"
 
 type EventProps = {
