@@ -3,37 +3,41 @@ import {
   createAsyncThunk,
   createSlice,
   nanoid,
-} from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
-import { sub } from "date-fns";
-import { CITIES } from "./city";
+} from "@reduxjs/toolkit"
+import { RootState } from "../../app/store"
+import { sub } from "date-fns"
+import { CITIES } from "./city"
+
+export type EventKind = "passage" | "mail" | "phone"
+export type EventGender = "male" | "female" | "x"
+export type EventAge =
+  | "0-14"
+  | "15-24"
+  | "25-34"
+  | "35-44"
+  | "45-54"
+  | "55-64"
+  | "65-74"
+  | "75-+"
 
 export type EventType = {
-  id: string;
-  kind: "passage" | "mail" | "phone";
-  gender: "male" | "female" | "x";
-  age:
-    | "0-14"
-    | "15-24"
-    | "25-34"
-    | "35-44"
-    | "45-54"
-    | "55-64"
-    | "65-74"
-    | "75-+";
-  city: string;
-  date: string;
-};
+  id: string
+  kind: EventKind
+  gender: EventGender
+  age: EventAge
+  city: string
+  date: string
+}
 
 type InitialStateExtra = {
-  status: "idle" | "loading" | "done";
-};
+  status: "idle" | "loading" | "done"
+}
 
-const randInt = (max: number) => Math.floor(Math.random() * max);
-const randChoices = (choices: Array<any>) => choices[randInt(choices.length)];
+const randInt = (max: number) => Math.floor(Math.random() * max)
+const randChoices = (choices: Array<any>) => choices[randInt(choices.length)]
 
 export const generateEvent = createAsyncThunk("event/generate", async () => {
-  const events: Array<EventType> = [];
+  const events: Array<EventType> = []
   for (let i = 0; i < 30; i++) {
     events.push({
       id: nanoid(),
@@ -51,18 +55,18 @@ export const generateEvent = createAsyncThunk("event/generate", async () => {
       ]),
       city: randChoices(Object.keys(CITIES.cities)),
       date: sub(new Date(), { minutes: randInt(60 * 24 * 7) }).toISOString(),
-    });
+    })
   }
-  return events;
-});
+  return events
+})
 
 const eventsAdapter = createEntityAdapter<EventType>({
   // Keep the "all IDs" array sorted based on date (desc)
   sortComparer: (a, b) => b.date.localeCompare(a.date),
-});
+})
 
-const initialStateExtra: InitialStateExtra = { status: "idle" };
-const initialState = eventsAdapter.getInitialState(initialStateExtra);
+const initialStateExtra: InitialStateExtra = { status: "idle" }
+const initialState = eventsAdapter.getInitialState(initialStateExtra)
 
 export const eventSlice = createSlice({
   name: "counter",
@@ -72,15 +76,15 @@ export const eventSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(generateEvent.fulfilled, (state, action) => {
-      state.status = "done";
-      eventsAdapter.setAll(state, action.payload);
-    });
+      state.status = "done"
+      eventsAdapter.setAll(state, action.payload)
+    })
   },
-});
+})
 
-export const { add } = eventSlice.actions;
+export const { add } = eventSlice.actions
 export const { selectAll: selectAllEvents } = eventsAdapter.getSelectors(
   (state: RootState) => state.event
-);
+)
 
-export default eventSlice.reducer;
+export default eventSlice.reducer
