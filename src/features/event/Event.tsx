@@ -5,84 +5,7 @@ import { fr } from "date-fns/locale"
 import { UserIcon, PhoneIcon, MailIcon } from "@heroicons/react/solid"
 import Card from "../../ui/Card"
 import CenterAlign from "../../ui/CenterAlign"
-import { useState } from "react"
-import { RadioGroup } from "@headlessui/react"
-
-type CheckIconProps = {
-  className: string
-}
-
-function CheckIcon(props: CheckIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx={12} cy={12} r={12} fill="#000" opacity="0.2" />
-      <path
-        d="M7 13l3 3 7-7"
-        stroke="#000"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-type KindGroupOptionProps = {
-  bg: string
-  label: string
-  value: string
-}
-
-function KindGroupOption({ bg, label, value }: KindGroupOptionProps) {
-  return (
-    <div className={`py-2 px-4 ${bg} rounded-md shadow-md font-bold`}>
-      <RadioGroup.Option value={value}>
-        {({ checked }) => (
-          <div className="flex flex-row w-64">
-            <div className="flex-grow">{label}</div>
-            {checked && (
-              <div className="flex-shrink-0">
-                <CheckIcon className="w-6 h-6" />
-              </div>
-            )}
-          </div>
-        )}
-      </RadioGroup.Option>
-    </div>
-  )
-}
-
-function KindGroup() {
-  let [group, setGroup] = useState(undefined)
-
-  return (
-    <div className="flex justify-center py-6 space-x-2">
-      <RadioGroup value={group} onChange={setGroup}>
-        <RadioGroup.Label className="sr-only">
-          Le type d'évènement
-        </RadioGroup.Label>
-        <div className="flex flex-col space-y-4">
-          <KindGroupOption bg="bg-amber-200" label="Passage" value="passage" />
-          <KindGroupOption bg="bg-cyan-200" label="Téléphone" value="phone" />
-          <KindGroupOption bg="bg-purple-200" label="Email" value="mail" />
-        </div>
-      </RadioGroup>
-    </div>
-  )
-}
-
-function NewEventForm() {
-  return (
-    <div className="w-96">
-      <div className="uppercase tracking-wider text-xs font-bold">
-        Ajouter un nouvel évènement
-      </div>
-      <div>
-        <KindGroup />
-      </div>
-    </div>
-  )
-}
+import { ageToStr, genderToStr, kindToStr } from "./util"
 
 type EventProps = {
   event: EventType
@@ -110,47 +33,15 @@ function IconKind({ event }: EventProps) {
 }
 
 function Kind({ event }: EventProps) {
-  const className = "font-bold"
-  switch (event.kind) {
-    case "passage":
-      return <div className={className}>Passage</div>
-    case "phone":
-      return <div className={className}>Téléphone</div>
-    case "mail":
-      return <div className={className}>Email</div>
-  }
+  return <div className="font-bold">{kindToStr(event.kind)}</div>
 }
 
 function Age({ event }: EventProps) {
-  switch (event.age) {
-    case "0-14":
-      return <div>0 à 14 ans</div>
-    case "15-24":
-      return <div>15 à 24 ans</div>
-    case "25-34":
-      return <div>25 à 34 ans</div>
-    case "35-44":
-      return <div>35 à 44 ans</div>
-    case "45-54":
-      return <div>45 à 54 ans</div>
-    case "55-64":
-      return <div>55 à 64 ans</div>
-    case "65-74":
-      return <div>65 à 74 ans</div>
-    case "75-+":
-      return <div>75 ans et plus</div>
-  }
+  return <div>{ageToStr(event.age)}</div>
 }
 
 function Gender({ event }: EventProps) {
-  switch (event.gender) {
-    case "male":
-      return <div>Homme</div>
-    case "female":
-      return <div>Femme</div>
-    case "x":
-      return <div>Autre</div>
-  }
+  return <div>{genderToStr(event.gender)}</div>
 }
 
 function City({ event }: EventProps) {
