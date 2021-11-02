@@ -1,8 +1,20 @@
-import { Dispatch, SetStateAction, useReducer, useState } from "react"
+import { Dispatch, useReducer, useState } from "react"
 import { RadioGroup } from "@headlessui/react"
 import { PencilIcon } from "@heroicons/react/solid"
-import { EventKind, EventGender, EventAge, EventType } from "./eventSlice"
+import {
+  EventKind,
+  EventGender,
+  EventAge,
+  addEvent,
+  NewEventType,
+} from "./eventSlice"
 import { ageToStr, dateToStr, genderToStr, kindToStr } from "./util"
+import {
+  OTHER_ID,
+  selectAllPostCode,
+  selectCityByPostCode,
+} from "../city/citySlice"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 
 type CheckIconProps = {
   className: string
@@ -153,20 +165,47 @@ function AgeGroup({ age, setAge }: AgeGroupProps) {
   )
 }
 
+type CityGroupByPostCodeProps = {
+  postCode: string
+}
+
+function CityGroupByPostCode({ postCode }: CityGroupByPostCodeProps) {
+  const cities = useAppSelector((state) =>
+    selectCityByPostCode(state, postCode)
+  )
+  return (
+    <>
+      {cities.map((c) => (
+        <GroupOption key={c.id} bg="bg-teal-200" label={c.name} value={c.id} />
+      ))}
+    </>
+  )
+}
+
 type CityGroupProps = {
   city: string | null
   setCity: (c: string) => void
 }
 
 function CityGroup({ city, setCity }: CityGroupProps) {
+  const postCodes = useAppSelector(selectAllPostCode)
+
   return (
     <div className="flex justify-center py-6 space-x-2">
       <RadioGroup value={city} onChange={setCity}>
         <RadioGroup.Label className="sr-only">
           La ville du visiteur
         </RadioGroup.Label>
+        {postCodes.map((pc) => (
+          <div key={pc} className="flex flex-col space-y-4">
+            <div className="font-bold mt-8">{pc}</div>
+            <CityGroupByPostCode postCode={pc} />
+          </div>
+        ))}
+
         <div className="flex flex-col space-y-4">
-          <GroupOption bg="bg-blue-200" label="Todo" value="todo" />
+          <div className="font-bold mt-8"></div>
+          <GroupOption bg="bg-teal-200" label="Autre" value={OTHER_ID} />
         </div>
       </RadioGroup>
     </div>
@@ -230,7 +269,7 @@ function Age({ age, resetAge }: AgeProps) {
 }
 
 type StepProps = {
-  state: NewEventState
+  state: NewEventType
   dispatch: Dispatch<Action>
 }
 
@@ -279,7 +318,13 @@ function StepAge({ state, dispatch }: StepProps) {
   )
 }
 
-function StepCity({ state, dispatch }: StepProps) {
+type StepCityProps = {
+  state: NewEventType
+  setCity: (c: string) => void
+  dispatch: Dispatch<Action>
+}
+
+function StepCity({ state, setCity, dispatch }: StepCityProps) {
   // Because if I'm in StepCity this is because
   // state.kind, state.date, state.gender, state.age and state.city are not null
   // Typescript seems not able to catch it, so... cast !
@@ -288,7 +333,6 @@ function StepCity({ state, dispatch }: StepProps) {
   const gender = state.gender as EventGender
   const age = state.age as EventAge
   const city = state.city as string
-  const setCity = (c: string) => dispatch({ type: "city", payload: c })
   const resetKind = () => dispatch({ type: "kind", payload: null })
   const resetGender = () => dispatch({ type: "gender", payload: null })
   const resetAge = () => dispatch({ type: "age", payload: null })
@@ -303,21 +347,14 @@ function StepCity({ state, dispatch }: StepProps) {
   )
 }
 
-type NewEventState = {
-  kind: EventKind | null
-  gender: EventGender | null
-  age: EventAge | null
-  city: null | string
-  date: string | null
-}
-
 type Action =
   | { type: "kind"; payload: EventKind | null }
   | { type: "gender"; payload: EventGender | null }
   | { type: "age"; payload: EventAge | null }
   | { type: "city"; payload: string | null }
+  | { type: "reset" }
 
-function newEventReducer(state: NewEventState, action: Action): NewEventState {
+function newEventReducer(state: NewEventType, action: Action): NewEventType {
   switch (action.type) {
     case "kind":
       return { ...state, kind: action.payload, date: new Date().toISOString() }
@@ -327,14 +364,20 @@ function newEventReducer(state: NewEventState, action: Action): NewEventState {
       return { ...state, age: action.payload }
     case "city":
       return { ...state, city: action.payload }
+    case "reset":
+      return {
+        kind: null,
+        gender: null,
+        age: null,
+        city: null,
+        date: null,
+      }
     default:
       throw new Error()
   }
 }
 
 export default function NewEventForm() {
-  let [kind, setKind] = useState<EventKind | null>(null)
-  let [gender, setGender] = useState<EventGender | null>(null)
   const [state, dispatch] = useReducer(newEventReducer, {
     kind: null,
     gender: null,
@@ -342,6 +385,15 @@ export default function NewEventForm() {
     city: null,
     date: null,
   })
+
+  const storeDispatch = useAppDispatch()
+  const setCity = (c: string) => {
+    // I could have dispatch type "city" here
+    // but there is no point because the next state update will happen only
+    // after the next tick and will be merged with type "reset"
+    storeDispatch(addEvent({ ...state, city: c }))
+    dispatch({ type: "reset" })
+  }
 
   let step
   if (state.kind === null) {
@@ -351,7 +403,7 @@ export default function NewEventForm() {
   } else if (state.age === null) {
     step = <StepAge state={state} dispatch={dispatch} />
   } else if (state.city === null) {
-    step = <StepCity state={state} dispatch={dispatch} />
+    step = <StepCity state={state} dispatch={dispatch} setCity={setCity} />
   }
 
   return (
