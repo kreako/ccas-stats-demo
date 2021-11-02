@@ -1,5 +1,6 @@
 import { useAppSelector } from "../../app/hooks"
 import { selectAllEvents, EventType } from "./eventSlice"
+import { selectCityById, CityType } from "../city/citySlice"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
 import { UserIcon, PhoneIcon, MailIcon } from "@heroicons/react/solid"
@@ -46,7 +47,13 @@ function Gender({ event }: EventProps) {
 }
 
 function City({ event }: EventProps) {
-  return <div>{event.city}</div>
+  const city: CityType | undefined = useAppSelector((state) =>
+    selectCityById(state, event.city)
+  )
+  if (city == undefined) {
+    return <div>?</div>
+  }
+  return <div className="line-clamp-1">{city.name}</div>
 }
 
 function LabelSeparator() {
@@ -65,11 +72,12 @@ function Event({ event }: EventProps) {
             <TimeAgo event={event} />
           </div>
           <Kind event={event} />
-          <div className="flex space-x-2 flex-wrap">
+          <div className="flex space-x-2">
             <Gender event={event} />
             <LabelSeparator />
             <Age event={event} />
-            <LabelSeparator />
+          </div>
+          <div>
             <City event={event} />
           </div>
         </div>
