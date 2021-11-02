@@ -28,6 +28,14 @@ export type EventType = {
   date: string
 }
 
+export type NewEventType = {
+  kind: EventKind | null
+  gender: EventGender | null
+  age: EventAge | null
+  city: null | string
+  date: string | null
+}
+
 type InitialStateExtra = {
   status: "idle" | "loading" | "done"
 }
@@ -74,7 +82,24 @@ export const eventSlice = createSlice({
   name: "counter",
   initialState: initialState,
   reducers: {
-    add: eventsAdapter.addOne,
+    addEvent(state, action) {
+      const id = nanoid()
+      const kind = action.payload.kind
+      const gender = action.payload.gender
+      const age = action.payload.age
+      const city = action.payload.city
+      const date = action.payload.date
+      if (
+        kind == null ||
+        gender == null ||
+        age == null ||
+        city == null ||
+        date == null
+      ) {
+        return
+      }
+      eventsAdapter.addOne(state, { id, kind, gender, age, city, date })
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(generateEvent.fulfilled, (state, action) => {
@@ -84,7 +109,7 @@ export const eventSlice = createSlice({
   },
 })
 
-export const { add } = eventSlice.actions
+export const { addEvent } = eventSlice.actions
 export const { selectAll: selectAllEvents } = eventsAdapter.getSelectors(
   (state: RootState) => state.event
 )
