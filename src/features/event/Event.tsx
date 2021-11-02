@@ -107,7 +107,10 @@ export default function EventPage() {
       </CenterAlign>
       <div className="my-24"></div>
       <CenterAlign>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
+        <div className="uppercase tracking-wider text-xs font-bold">
+          Les derniers évènements
+        </div>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
           <EventList />
         </div>
       </CenterAlign>
