@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
 import eventReducer from "../features/event/eventSlice"
+import cityReducer from "../features/city/citySlice"
 
 export const store = configureStore({
   reducer: {
     event: eventReducer,
+    city: cityReducer,
   },
 })
 
