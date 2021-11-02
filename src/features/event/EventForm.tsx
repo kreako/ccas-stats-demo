@@ -204,7 +204,7 @@ function CityGroup({ city, setCity }: CityGroupProps) {
         ))}
 
         <div className="flex flex-col space-y-4">
-          <div className="font-bold mt-8"></div>
+          <div className="font-bold mt-8">Autre</div>
           <GroupOption bg="bg-teal-200" label="Autre" value={OTHER_ID} />
         </div>
       </RadioGroup>
