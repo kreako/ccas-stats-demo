@@ -56,8 +56,11 @@ export const citySlice = createSlice({
   },
 })
 
-export const { selectAll: selectAllCities, selectIds: selectAllCityIds } =
-  citiesAdapter.getSelectors((state: RootState) => state.city)
+export const {
+  selectAll: selectAllCities,
+  selectIds: selectAllCityIds,
+  selectById: selectCityById,
+} = citiesAdapter.getSelectors((state: RootState) => state.city)
 
 export const selectAllPostCode = createSelector(
   [selectAllCities],
