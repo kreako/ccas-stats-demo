@@ -8,7 +8,7 @@ import {
 import { RootState } from "../../app/store"
 import { EventType } from "../event/eventSlice"
 
-type City = {
+export type CityType = {
   id: string
   postCode?: string
   name: string
@@ -42,7 +42,7 @@ export const generateCity = createAsyncThunk("city/generate", async () => {
   ]
 })
 
-const citiesAdapter = createEntityAdapter<City>()
+const citiesAdapter = createEntityAdapter<CityType>()
 const initialState = citiesAdapter.getInitialState()
 
 export const citySlice = createSlice({
@@ -64,8 +64,8 @@ export const {
 
 export const selectAllPostCode = createSelector(
   [selectAllCities],
-  (cities: Array<City>) => {
-    const s = cities.reduce((storage: Set<string>, c: City) => {
+  (cities: Array<CityType>) => {
+    const s = cities.reduce((storage: Set<string>, c: CityType) => {
       if (c.postCode != undefined) {
         storage.add(c.postCode)
       }
@@ -77,8 +77,8 @@ export const selectAllPostCode = createSelector(
 
 export const selectByPostCode = createSelector(
   [selectAllCities, (state: RootState, postCode: string) => postCode],
-  (cities: Array<City>, postCode: string) =>
-    cities.reduce((storage: Array<City>, c: City) => {
+  (cities: Array<CityType>, postCode: string) =>
+    cities.reduce((storage: Array<CityType>, c: CityType) => {
       if (c.postCode === postCode) {
         storage.push(c)
       }
