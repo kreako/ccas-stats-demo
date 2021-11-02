@@ -75,7 +75,7 @@ export const selectAllPostCode = createSelector(
   }
 )
 
-export const selectByPostCode = createSelector(
+export const selectCityByPostCode = createSelector(
   [selectAllCities, (state: RootState, postCode: string) => postCode],
   (cities: Array<CityType>, postCode: string) =>
     cities.reduce((storage: Array<CityType>, c: CityType) => {
