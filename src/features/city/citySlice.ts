@@ -71,7 +71,9 @@ export const selectAllPostCode = createSelector(
       }
       return storage
     }, new Set())
-    return [...s.values()]
+    const postcodes = [...s.values()]
+    postcodes.sort()
+    return postcodes
   }
 )
 
