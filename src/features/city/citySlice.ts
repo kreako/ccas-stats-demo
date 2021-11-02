@@ -14,6 +14,8 @@ export type CityType = {
   name: string
 }
 
+export const OTHER_ID = nanoid()
+
 export const generateCity = createAsyncThunk("city/generate", async () => {
   return [
     { id: nanoid(), postCode: "12130", name: "La Capelle Bonance" },
@@ -38,7 +40,7 @@ export const generateCity = createAsyncThunk("city/generate", async () => {
       postCode: "12150",
       name: "SEverac d'Aveyron - Buzeins",
     },
-    { id: nanoid(), name: "Autre" },
+    { id: OTHER_ID, name: "Autre" },
   ]
 })
 
