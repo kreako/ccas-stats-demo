@@ -16,27 +16,27 @@ type City = {
 
 export const generateCity = createAsyncThunk("city/generate", async () => {
   return [
-    { id: nanoid(), postCode: "12130", name: "LA CAPELLE BONANCE" },
-    { id: nanoid(), postCode: "12130", name: "PIERREFICHE" },
-    { id: nanoid(), postCode: "12140", name: "CAMPOURIEZ" },
-    { id: nanoid(), postCode: "12140", name: "ENTRAYGUES SUR TRUYERE" },
-    { id: nanoid(), postCode: "12140", name: "FLORENTIN LA CAPELLE" },
-    { id: nanoid(), postCode: "12140", name: "LE FEL" },
-    { id: nanoid(), postCode: "12140", name: "ST HIPPOLYTE" },
+    { id: nanoid(), postCode: "12130", name: "La Capelle Bonance" },
+    { id: nanoid(), postCode: "12130", name: "Pierrefiche" },
+    { id: nanoid(), postCode: "12140", name: "Campouriez" },
+    { id: nanoid(), postCode: "12140", name: "Entraygues Sur Truyere" },
+    { id: nanoid(), postCode: "12140", name: "Florentin La Capelle" },
+    { id: nanoid(), postCode: "12140", name: "Le Fel" },
+    { id: nanoid(), postCode: "12140", name: "St Hippolyte" },
     {
       id: nanoid(),
       postCode: "12150",
-      name: "SEVERAC D AVEYRON - RECOULES PREVINQUIERES",
+      name: "Severac d'Aveyron - Recoules Previnquieres",
     },
     {
       id: nanoid(),
       postCode: "12150",
-      name: "SEVERAC D AVEYRON - LAPANOUSE",
+      name: "Severac d'Aveyron - Lapanouse",
     },
     {
       id: nanoid(),
       postCode: "12150",
-      name: "SEVERAC D AVEYRON - BUZEINS",
+      name: "SEverac d'Aveyron - Buzeins",
     },
     { id: nanoid(), name: "Autre" },
   ]
