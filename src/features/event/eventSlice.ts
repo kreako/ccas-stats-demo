@@ -3,6 +3,7 @@ import {
   createAsyncThunk,
   createSlice,
   nanoid,
+  createSelector,
 } from "@reduxjs/toolkit"
 import { RootState } from "../../app/store"
 import { sub } from "date-fns"
@@ -112,6 +113,14 @@ export const eventSlice = createSlice({
 export const { addEvent } = eventSlice.actions
 export const { selectAll: selectAllEvents } = eventsAdapter.getSelectors(
   (state: RootState) => state.event
+)
+
+export const selectEventSlice = createSelector(
+  [
+    selectAllEvents,
+    (state: RootState, start: number, end: number) => [start, end],
+  ],
+  (events: Array<EventType>, [start, end]) => events.slice(start, end)
 )
 
 export default eventSlice.reducer
