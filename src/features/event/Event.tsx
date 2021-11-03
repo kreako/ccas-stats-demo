@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../app/hooks"
-import { selectAllEvents, EventType } from "./eventSlice"
+import { EventType, selectEventSlice } from "./eventSlice"
 import { selectCityById, CityType } from "../city/citySlice"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -87,7 +87,7 @@ function Event({ event }: EventProps) {
 }
 
 function EventList() {
-  const events = useAppSelector(selectAllEvents)
+  const events = useAppSelector((state) => selectEventSlice(state, 0, 30))
   return (
     <>
       {events.map((e) => (
