@@ -238,4 +238,45 @@ export const selectEventKindPerDate = createSelector(
   }
 )
 
+export const selectEventAgePerDate = createSelector(
+  [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
+  (events: Array<EventType>, [from, to]) => {
+    const fromDt = parseISO(from)
+    const toDt = parseISO(to)
+    const count = {
+      "0-14": 0,
+      "15-24": 0,
+      "25-34": 0,
+      "35-44": 0,
+      "45-54": 0,
+      "55-64": 0,
+      "65-74": 0,
+      "75-+": 0,
+    }
+    for (const event of events) {
+      const dt = parseISO(event.date)
+      if (fromDt <= dt && dt <= toDt) {
+        if (event.age === "0-14") {
+          count["0-14"] += 1
+        } else if (event.age === "15-24") {
+          count["15-24"] += 1
+        } else if (event.age === "25-34") {
+          count["25-34"] += 1
+        } else if (event.age === "35-44") {
+          count["35-44"] += 1
+        } else if (event.age === "45-54") {
+          count["45-54"] += 1
+        } else if (event.age === "55-64") {
+          count["55-64"] += 1
+        } else if (event.age === "65-74") {
+          count["65-74"] += 1
+        } else {
+          count["75-+"] += 1
+        }
+      }
+    }
+    return count
+  }
+)
+
 export default eventSlice.reducer
