@@ -97,7 +97,7 @@ export const generateEvent = createAsyncThunk(
         // Push the event
         events.push({
           id: nanoid(),
-          kind: randChoices(["passage", "mail", "phone"]),
+          kind: ch.weighted(["passage", "mail", "phone"], [65, 15, 20]),
           gender: ch.weighted(["male", "female", "x"], [49, 50, 1]),
           age: randChoices([
             "0-14",
