@@ -6,7 +6,14 @@ import {
   createSelector,
 } from "@reduxjs/toolkit"
 import { RootState } from "../../app/store"
-import { addBusinessDays, addDays, isWeekend } from "date-fns"
+import {
+  addBusinessDays,
+  addDays,
+  formatISO,
+  isWeekend,
+  parseISO,
+} from "date-fns"
+import { getValueFormatter } from "@nivo/core"
 
 export type EventKind = "passage" | "mail" | "phone"
 export type EventGender = "male" | "female" | "x"
@@ -152,6 +159,28 @@ export const selectEventSlice = createSelector(
     (state: RootState, start: number, end: number) => [start, end],
   ],
   (events: Array<EventType>, [start, end]) => events.slice(start, end)
+)
+
+export const selectEventCountPerDate = createSelector(
+  [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
+  (events: Array<EventType>, [from, to]) => {
+    const fromDt = parseISO(from)
+    const toDt = parseISO(to)
+    // keep for each date in the period the count
+    const count: { [dt: string]: number } = {}
+    for (const event of events) {
+      const dt = parseISO(event.date)
+      if (fromDt <= dt && dt <= toDt) {
+        const d = formatISO(dt, { representation: "date" })
+        count[d] = count[d] || 0
+        count[d] += 1
+      }
+    }
+    // Now flatten count object to match the needed structure
+    return Object.entries(count).map(([day, value]: [string, number]) => {
+      return { value, day }
+    })
+  }
 )
 
 export default eventSlice.reducer
