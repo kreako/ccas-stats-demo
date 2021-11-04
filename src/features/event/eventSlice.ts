@@ -6,7 +6,7 @@ import {
   createSelector,
 } from "@reduxjs/toolkit"
 import { RootState } from "../../app/store"
-import { sub } from "date-fns"
+import { addBusinessDays, addDays, isWeekend } from "date-fns"
 
 export type EventKind = "passage" | "mail" | "phone"
 export type EventGender = "male" | "female" | "x"
@@ -48,24 +48,55 @@ export const generateEvent = createAsyncThunk(
   "event/generate",
   async (cityIds: Array<string>) => {
     const events: Array<EventType> = []
-    for (let i = 0; i < 30; i++) {
-      events.push({
-        id: nanoid(),
-        kind: randChoices(["passage", "mail", "phone"]),
-        gender: randChoices(["male", "female", "x"]),
-        age: randChoices([
-          "0-14",
-          "15-24",
-          "25-34",
-          "35-44",
-          "45-54",
-          "55-64",
-          "65-74",
-          "75-+",
-        ]),
-        city: randChoices(cityIds),
-        date: sub(new Date(), { minutes: randInt(60 * 24 * 7) }).toISOString(),
-      })
+    // Generate events for each business days of the year
+    const year = new Date().getFullYear()
+    const now = new Date()
+    let dt = new Date(year, 0, 1)
+    // go to the first non-week-end day
+    while (isWeekend(dt)) {
+      dt = addDays(dt, 1)
+    }
+    while (dt <= now) {
+      // number of events to generate
+      const nb = randInt(30) + 15
+      for (let i = 0; i < nb; i++) {
+        // Select a date
+        const hour = randInt(11) + 8 // From 8h to 18h
+        const minute = randInt(59)
+        const second = randInt(59)
+        const d = new Date(
+          year,
+          dt.getMonth(),
+          dt.getDate(),
+          hour,
+          minute,
+          second
+        )
+        if (d > now) {
+          // Do not register a future event :)
+          continue
+        }
+        // Push the event
+        events.push({
+          id: nanoid(),
+          kind: randChoices(["passage", "mail", "phone"]),
+          gender: randChoices(["male", "female", "x"]),
+          age: randChoices([
+            "0-14",
+            "15-24",
+            "25-34",
+            "35-44",
+            "45-54",
+            "55-64",
+            "65-74",
+            "75-+",
+          ]),
+          city: randChoices(cityIds),
+          date: d.toISOString(),
+        })
+      }
+      // Go to the next business day
+      dt = addBusinessDays(dt, 1)
     }
     return events
   }
