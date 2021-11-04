@@ -64,8 +64,18 @@ export const generateEvent = createAsyncThunk(
       dt = addDays(dt, 1)
     }
     while (dt <= now) {
+      // adjust based on period
+      let adjust = 20
+      if (dt.getMonth() === 6 || dt.getMonth() === 7) {
+        // Less activity during summer
+        adjust -= 20
+      }
+      if (dt.getDay() === 3) {
+        // Less activity on wenesday
+        adjust -= 10
+      }
       // number of events to generate
-      const nb = randInt(30) + 15
+      const nb = randInt(25) + adjust
       for (let i = 0; i < nb; i++) {
         // Select a date
         const hour = randInt(11) + 8 // From 8h to 18h
