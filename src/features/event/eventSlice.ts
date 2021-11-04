@@ -216,4 +216,26 @@ export const selectEventGenderPerDate = createSelector(
   }
 )
 
+export const selectEventKindPerDate = createSelector(
+  [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
+  (events: Array<EventType>, [from, to]) => {
+    const fromDt = parseISO(from)
+    const toDt = parseISO(to)
+    const count = { passage: 0, phone: 0, mail: 0 }
+    for (const event of events) {
+      const dt = parseISO(event.date)
+      if (fromDt <= dt && dt <= toDt) {
+        if (event.kind === "passage") {
+          count.passage += 1
+        } else if (event.kind === "phone") {
+          count.phone += 1
+        } else {
+          count.mail += 1
+        }
+      }
+    }
+    return count
+  }
+)
+
 export default eventSlice.reducer
