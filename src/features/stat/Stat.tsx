@@ -73,23 +73,30 @@ function KindPie({ label, from, to }: StatsProps) {
         <ResponsivePie
           data={data}
           colors={[amber[300], cyan[300], purple[300]]}
-          borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
           innerRadius={0.3}
           padAngle={0.7}
           cornerRadius={0.3}
-          arcLinkLabelsColor={{ from: "color" }}
-          arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
-          arcLinkLabelsThickness={2}
           arcLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
+          enableArcLinkLabels={false}
         />
       </div>
       <div className="flex flex-col items-center">
-        <div className="text-sm text-blueGray-700">{label}</div>
-        <div className="text-xs text-blueGray-700">
-          Répartition par type de visites
+        <div className="flex space-x-4 items-center">
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-amber-300"></div>
+            <div className="text-sm text-blueGray-700">Passage</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-cyan-300"></div>
+            <div className="text-sm text-blueGray-700">Téléphone</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-purple-300"></div>
+            <div className="text-sm text-blueGray-700">Email</div>
+          </div>
         </div>
       </div>
+      <div className="text-blueGray-700">Répartition par type de visites</div>
     </div>
   )
 }
