@@ -55,6 +55,7 @@ export const generateEvent = createAsyncThunk(
   "event/generate",
   async (cityIds: Array<string>) => {
     const ch = chance()
+    const ageWeight = ch.n(ch.integer, 8, { min: 5, max: 20 })
     const events: Array<EventType> = []
     // Generate events for each business days of the year
     const year = new Date().getFullYear()
@@ -99,16 +100,19 @@ export const generateEvent = createAsyncThunk(
           id: nanoid(),
           kind: ch.weighted(["passage", "mail", "phone"], [65, 15, 20]),
           gender: ch.weighted(["male", "female", "x"], [49, 50, 1]),
-          age: randChoices([
-            "0-14",
-            "15-24",
-            "25-34",
-            "35-44",
-            "45-54",
-            "55-64",
-            "65-74",
-            "75-+",
-          ]),
+          age: ch.weighted(
+            [
+              "0-14",
+              "15-24",
+              "25-34",
+              "35-44",
+              "45-54",
+              "55-64",
+              "65-74",
+              "75-+",
+            ],
+            ageWeight
+          ),
           city: randChoices(cityIds),
           date: d.toISOString(),
         })
