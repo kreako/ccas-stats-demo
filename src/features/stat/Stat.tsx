@@ -1,14 +1,6 @@
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { ResponsivePie } from "@nivo/pie"
-import {
-  amber,
-  blue,
-  blueGray,
-  cyan,
-  pink,
-  purple,
-  sky,
-} from "tailwindcss/colors"
+import { amber, blueGray, cyan, pink, purple, sky } from "tailwindcss/colors"
 import { useAppSelector } from "../../app/hooks"
 import {
   selectEventCountPerDate,
@@ -17,12 +9,11 @@ import {
 } from "../event/eventSlice"
 
 type StatsProps = {
-  label: string
   from: string
   to: string
 }
 
-function EventCalendar({ label, from, to }: StatsProps) {
+function EventCalendar({ from, to }: StatsProps) {
   const data = useAppSelector((state) =>
     selectEventCountPerDate(state, from, to)
   )
@@ -37,10 +28,7 @@ function EventCalendar({ label, from, to }: StatsProps) {
         />
       </div>
       <div className="flex flex-col items-center">
-        <div className="text-sm text-blueGray-700">{label}</div>
-        <div className="text-xs text-blueGray-700">
-          Nombres de visites par jour
-        </div>
+        <div className="text-blueGray-700">Nombres de visites par jour</div>
         <div className="text-xs text-blueGray-700">
           du plus fréquenté (en foncé) au moins fréquenté (en clair)
         </div>
@@ -49,7 +37,41 @@ function EventCalendar({ label, from, to }: StatsProps) {
   )
 }
 
-function KindPie({ label, from, to }: StatsProps) {
+type PieValue = {
+  id: string
+  value: number
+}
+
+type PieProps = {
+  data: Array<PieValue>
+  colors: Array<string>
+  legend: React.ReactNode
+  title: string
+}
+
+function Pie({ data, colors, legend, title }: PieProps) {
+  return (
+    <div className="flex flex-col space-y-4 items-center">
+      <div className="flex-grow w-full h-64 lg:h-64 xl:h-96">
+        <ResponsivePie
+          data={data}
+          colors={colors}
+          innerRadius={0.3}
+          padAngle={0.7}
+          cornerRadius={0.3}
+          arcLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
+          enableArcLinkLabels={false}
+        />
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="flex space-x-4 items-center">{legend}</div>
+      </div>
+      <div className="text-blueGray-700">{title}</div>
+    </div>
+  )
+}
+
+function KindPie({ from, to }: StatsProps) {
   const count = useAppSelector((state) =>
     selectEventKindPerDate(state, from, to)
   )
@@ -68,20 +90,12 @@ function KindPie({ label, from, to }: StatsProps) {
     },
   ]
   return (
-    <div className="flex flex-col space-y-4 items-center">
-      <div className="flex-grow w-full h-64 lg:h-64 xl:h-96">
-        <ResponsivePie
-          data={data}
-          colors={[amber[300], cyan[300], purple[300]]}
-          innerRadius={0.3}
-          padAngle={0.7}
-          cornerRadius={0.3}
-          arcLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
-          enableArcLinkLabels={false}
-        />
-      </div>
-      <div className="flex flex-col items-center">
-        <div className="flex space-x-4 items-center">
+    <Pie
+      data={data}
+      colors={[amber[300], cyan[300], purple[300]]}
+      title="Répartition par type de visites"
+      legend={
+        <>
           <div className="flex space-x-2 items-center">
             <div className="h-4 w-8 bg-amber-300"></div>
             <div className="text-sm text-blueGray-700">Passage</div>
@@ -94,14 +108,13 @@ function KindPie({ label, from, to }: StatsProps) {
             <div className="h-4 w-8 bg-purple-300"></div>
             <div className="text-sm text-blueGray-700">Email</div>
           </div>
-        </div>
-      </div>
-      <div className="text-blueGray-700">Répartition par type de visites</div>
-    </div>
+        </>
+      }
+    />
   )
 }
 
-function GenderPie({ label, from, to }: StatsProps) {
+function GenderPie({ from, to }: StatsProps) {
   const count = useAppSelector((state) =>
     selectEventGenderPerDate(state, from, to)
   )
@@ -120,27 +133,27 @@ function GenderPie({ label, from, to }: StatsProps) {
     },
   ]
   return (
-    <div className="flex flex-col space-y-4 items-center">
-      <div className="flex-grow w-full h-64 lg:h-64 xl:h-96">
-        <ResponsivePie
-          data={data}
-          colors={[pink[300], sky[300], blueGray[300]]}
-          borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
-          innerRadius={0.3}
-          padAngle={0.7}
-          cornerRadius={0.3}
-          arcLinkLabelsColor={{ from: "color" }}
-          arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
-          arcLinkLabelsThickness={2}
-          arcLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
-        />
-      </div>
-      <div className="flex flex-col items-center">
-        <div className="text-sm text-blueGray-700">{label}</div>
-        <div className="text-xs text-blueGray-700">Répartition par genre</div>
-      </div>
-    </div>
+    <Pie
+      data={data}
+      colors={[pink[300], sky[300], blueGray[300]]}
+      title="Répartition par genre"
+      legend={
+        <>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-pink-300"></div>
+            <div className="text-sm text-blueGray-700">Femme</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-sky-300"></div>
+            <div className="text-sm text-blueGray-700">Homme</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-blueGray-300"></div>
+            <div className="text-sm text-blueGray-700">Autre</div>
+          </div>
+        </>
+      }
+    />
   )
 }
 
@@ -152,14 +165,10 @@ export default function StatPage() {
       </div>
       <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-16 px-1">
         <div className="col-span-1 lg:col-span-2 xl:col-span-3">
-          <EventCalendar
-            label="Visites 2021"
-            from="2021-01-01"
-            to="2021-12-31"
-          />
+          <EventCalendar from="2021-01-01" to="2021-12-31" />
         </div>
-        <KindPie label="Visites 2021" from="2021-01-01" to="2021-12-31" />
-        <GenderPie label="Visites 2021" from="2021-01-01" to="2021-12-31" />
+        <KindPie from="2021-01-01" to="2021-12-31" />
+        <GenderPie from="2021-01-01" to="2021-12-31" />
       </div>
     </div>
   )
