@@ -1,10 +1,19 @@
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { ResponsivePie } from "@nivo/pie"
-import { blue, blueGray, pink, sky } from "tailwindcss/colors"
+import {
+  amber,
+  blue,
+  blueGray,
+  cyan,
+  pink,
+  purple,
+  sky,
+} from "tailwindcss/colors"
 import { useAppSelector } from "../../app/hooks"
 import {
   selectEventCountPerDate,
   selectEventGenderPerDate,
+  selectEventKindPerDate,
 } from "../event/eventSlice"
 
 type StatsProps = {
@@ -34,6 +43,51 @@ function EventCalendar({ label, from, to }: StatsProps) {
         </div>
         <div className="text-xs text-blueGray-700">
           du plus fréquenté (en foncé) au moins fréquenté (en clair)
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function KindPie({ label, from, to }: StatsProps) {
+  const count = useAppSelector((state) =>
+    selectEventKindPerDate(state, from, to)
+  )
+  const data = [
+    {
+      id: "Passage",
+      value: count.passage,
+    },
+    {
+      id: "Téléphone",
+      value: count.phone,
+    },
+    {
+      id: "Email",
+      value: count.mail,
+    },
+  ]
+  return (
+    <div className="flex flex-col space-y-4 items-center">
+      <div className="flex-grow w-full h-64 lg:h-64 xl:h-96">
+        <ResponsivePie
+          data={data}
+          colors={[amber[300], cyan[300], purple[300]]}
+          borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
+          innerRadius={0.3}
+          padAngle={0.7}
+          cornerRadius={0.3}
+          arcLinkLabelsColor={{ from: "color" }}
+          arcLinkLabelsSkipAngle={10}
+          arcLinkLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
+          arcLinkLabelsThickness={2}
+          arcLabelsTextColor={{ from: "color", modifiers: [["darker", 3]] }}
+        />
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="text-sm text-blueGray-700">{label}</div>
+        <div className="text-xs text-blueGray-700">
+          Répartition par type de visites
         </div>
       </div>
     </div>
@@ -97,6 +151,7 @@ export default function StatPage() {
             to="2021-12-31"
           />
         </div>
+        <KindPie label="Visites 2021" from="2021-01-01" to="2021-12-31" />
         <GenderPie label="Visites 2021" from="2021-01-01" to="2021-12-31" />
       </div>
     </div>
