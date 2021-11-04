@@ -1,12 +1,26 @@
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { ResponsivePie } from "@nivo/pie"
-import { amber, blueGray, cyan, pink, purple, sky } from "tailwindcss/colors"
+import {
+  amber,
+  blue,
+  blueGray,
+  cyan,
+  green,
+  lime,
+  pink,
+  purple,
+  red,
+  rose,
+  sky,
+} from "tailwindcss/colors"
 import { useAppSelector } from "../../app/hooks"
 import {
+  selectEventAgePerDate,
   selectEventCountPerDate,
   selectEventGenderPerDate,
   selectEventKindPerDate,
 } from "../event/eventSlice"
+import { ageToStr } from "../event/util"
 
 type StatsProps = {
   from: string
@@ -63,9 +77,7 @@ function Pie({ data, colors, legend, title }: PieProps) {
           enableArcLinkLabels={false}
         />
       </div>
-      <div className="flex flex-col items-center">
-        <div className="flex space-x-4 items-center">{legend}</div>
-      </div>
+      <div className="flex flex-col items-center">{legend}</div>
       <div className="text-blueGray-700">{title}</div>
     </div>
   )
@@ -95,7 +107,7 @@ function KindPie({ from, to }: StatsProps) {
       colors={[amber[300], cyan[300], purple[300]]}
       title="Répartition par type de visites"
       legend={
-        <>
+        <div className="flex space-x-4 items-center">
           <div className="flex space-x-2 items-center">
             <div className="h-4 w-8 bg-amber-300"></div>
             <div className="text-sm text-blueGray-700">Passage</div>
@@ -108,7 +120,7 @@ function KindPie({ from, to }: StatsProps) {
             <div className="h-4 w-8 bg-purple-300"></div>
             <div className="text-sm text-blueGray-700">Email</div>
           </div>
-        </>
+        </div>
       }
     />
   )
@@ -138,7 +150,7 @@ function GenderPie({ from, to }: StatsProps) {
       colors={[pink[300], sky[300], blueGray[300]]}
       title="Répartition par genre"
       legend={
-        <>
+        <div className="flex space-x-4 items-center">
           <div className="flex space-x-2 items-center">
             <div className="h-4 w-8 bg-pink-300"></div>
             <div className="text-sm text-blueGray-700">Femme</div>
@@ -150,6 +162,120 @@ function GenderPie({ from, to }: StatsProps) {
           <div className="flex space-x-2 items-center">
             <div className="h-4 w-8 bg-blueGray-300"></div>
             <div className="text-sm text-blueGray-700">Autre</div>
+          </div>
+        </div>
+      }
+    />
+  )
+}
+
+function AgePie({ from, to }: StatsProps) {
+  const count = useAppSelector((state) =>
+    selectEventAgePerDate(state, from, to)
+  )
+  const data = [
+    {
+      id: ageToStr("0-14"),
+      value: count["0-14"],
+    },
+    {
+      id: ageToStr("15-24"),
+      value: count["15-24"],
+    },
+    {
+      id: ageToStr("25-34"),
+      value: count["25-34"],
+    },
+    {
+      id: ageToStr("35-44"),
+      value: count["35-44"],
+    },
+    {
+      id: ageToStr("45-54"),
+      value: count["45-54"],
+    },
+    {
+      id: ageToStr("55-64"),
+      value: count["55-64"],
+    },
+    {
+      id: ageToStr("65-74"),
+      value: count["65-74"],
+    },
+    {
+      id: ageToStr("75-+"),
+      value: count["75-+"],
+    },
+  ]
+  return (
+    <Pie
+      data={data}
+      colors={[
+        blueGray[300],
+        lime[300],
+        amber[300],
+        green[300],
+        cyan[300],
+        blue[300],
+        purple[300],
+        rose[300],
+      ]}
+      title="Répartition par âge"
+      legend={
+        <>
+          <div className="flex space-x-4 items-center">
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-blueGray-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("0-14")}
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-lime-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("15-24")}
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-amber-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("25-34")}
+              </div>
+            </div>
+          </div>
+          <div className="flex space-x-4 items-center">
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-green-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("35-44")}
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-cyan-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("45-54")}
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-blue-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("55-64")}
+              </div>
+            </div>
+          </div>
+          <div className="flex space-x-4 items-center">
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-purple-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("65-74")}
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <div className="h-4 w-8 bg-rose-300"></div>
+              <div className="text-sm text-blueGray-700">
+                {ageToStr("75-+")}
+              </div>
+            </div>
           </div>
         </>
       }
@@ -169,6 +295,7 @@ export default function StatPage() {
         </div>
         <KindPie from="2021-01-01" to="2021-12-31" />
         <GenderPie from="2021-01-01" to="2021-12-31" />
+        <AgePie from="2021-01-01" to="2021-12-31" />
       </div>
     </div>
   )
