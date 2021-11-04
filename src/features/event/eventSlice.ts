@@ -193,4 +193,26 @@ export const selectEventCountPerDate = createSelector(
   }
 )
 
+export const selectEventGenderPerDate = createSelector(
+  [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
+  (events: Array<EventType>, [from, to]) => {
+    const fromDt = parseISO(from)
+    const toDt = parseISO(to)
+    const count = { female: 0, male: 0, other: 0 }
+    for (const event of events) {
+      const dt = parseISO(event.date)
+      if (fromDt <= dt && dt <= toDt) {
+        if (event.gender === "female") {
+          count.female += 1
+        } else if (event.gender === "male") {
+          count.male += 1
+        } else {
+          count.other += 1
+        }
+      }
+    }
+    return count
+  }
+)
+
 export default eventSlice.reducer
