@@ -13,7 +13,7 @@ import {
   isWeekend,
   parseISO,
 } from "date-fns"
-import { getValueFormatter } from "@nivo/core"
+import chance from "chance"
 
 export type EventKind = "passage" | "mail" | "phone"
 export type EventGender = "male" | "female" | "x"
@@ -54,6 +54,7 @@ const randChoices = (choices: Array<any>) => choices[randInt(choices.length)]
 export const generateEvent = createAsyncThunk(
   "event/generate",
   async (cityIds: Array<string>) => {
+    const ch = chance()
     const events: Array<EventType> = []
     // Generate events for each business days of the year
     const year = new Date().getFullYear()
@@ -97,7 +98,7 @@ export const generateEvent = createAsyncThunk(
         events.push({
           id: nanoid(),
           kind: randChoices(["passage", "mail", "phone"]),
-          gender: randChoices(["male", "female", "x"]),
+          gender: ch.weighted(["male", "female", "x"], [49, 50, 1]),
           age: randChoices([
             "0-14",
             "15-24",
