@@ -409,7 +409,7 @@ export default function NewEventForm() {
   return (
     <div className="w-96">
       <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
-        Ajouter un nouvel évènement
+        Ajouter une nouvelle visite
       </div>
       <div className="mt-4">{step}</div>
     </div>
