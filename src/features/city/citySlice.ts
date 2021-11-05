@@ -62,6 +62,7 @@ export const {
   selectAll: selectAllCities,
   selectIds: selectAllCityIds,
   selectById: selectCityById,
+  selectEntities: selectCityEntities,
 } = citiesAdapter.getSelectors((state: RootState) => state.city)
 
 export const selectAllPostCode = createSelector(
