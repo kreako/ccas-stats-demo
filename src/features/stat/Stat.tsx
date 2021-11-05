@@ -9,14 +9,15 @@ import {
   lime,
   pink,
   purple,
-  red,
   rose,
   sky,
 } from "tailwindcss/colors"
 import { useAppSelector } from "../../app/hooks"
+import { selectAllPostCode, selectCityEntities } from "../city/citySlice"
 import {
   selectEventAgePerDate,
   selectEventCountPerDate,
+  selectEventDateSlice,
   selectEventGenderPerDate,
   selectEventKindPerDate,
 } from "../event/eventSlice"
@@ -283,9 +284,84 @@ function AgePie({ from, to }: StatsProps) {
   )
 }
 
+function PostCodePie({ from, to }: StatsProps) {
+  const events = useAppSelector((state) =>
+    selectEventDateSlice(state, from, to)
+  )
+  const postCodes = useAppSelector(selectAllPostCode)
+  const count = postCodes.reduce(
+    (storage: { [postCode: string]: number }, pc: string) => {
+      storage[pc] = 0
+      return storage
+    },
+    {}
+  )
+  count["inconnu"] = 0
+  const cities = useAppSelector(selectCityEntities)
+  for (const event of events) {
+    const city = cities[event.city]
+    if (city) {
+      if (city.postCode) {
+        count[city.postCode] += 1
+      } else {
+        count["inconnu"] += 1
+      }
+    }
+  }
+  // TODO I know that I have 3 PC and unknown as this is static for now
+  const data = [
+    {
+      id: "12140",
+      value: count["12140"],
+    },
+    {
+      id: "12130",
+      value: count["12130"],
+    },
+    {
+      id: "12150",
+      value: count["12150"],
+    },
+    {
+      id: "inconnu",
+      value: count["inconnu"],
+    },
+  ]
+
+  const colors = [amber[300], cyan[300], purple[300], rose[300]]
+
+  return (
+    <Pie
+      data={data}
+      colors={colors}
+      title="Répartition par code postal"
+      legend={
+        <div className="flex space-x-4 items-center">
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-amber-300"></div>
+            <div className="text-sm text-blueGray-700">12140</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-cyan-300"></div>
+            <div className="text-sm text-blueGray-700">12130</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-purple-300"></div>
+            <div className="text-sm text-blueGray-700">12150</div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <div className="h-4 w-8 bg-rose-300"></div>
+            <div className="text-sm text-blueGray-700">inconnu</div>
+          </div>
+        </div>
+      }
+    />
+  )
+}
+
 export default function StatPage() {
   return (
-    <div className="mt-8 w-full">
+    <div className="my-8 w-full">
       <div className="uppercase tracking-wider text-xs font-bold text-sky-900 ml-2 md:ml-4 lg:ml-8 xl:ml-16">
         Calendrier
       </div>
@@ -296,6 +372,7 @@ export default function StatPage() {
         <KindPie from="2021-01-01" to="2021-12-31" />
         <GenderPie from="2021-01-01" to="2021-12-31" />
         <AgePie from="2021-01-01" to="2021-12-31" />
+        <PostCodePie from="2021-11-01" to="2021-12-31" />
       </div>
     </div>
   )
