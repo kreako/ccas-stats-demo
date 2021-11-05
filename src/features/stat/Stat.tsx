@@ -359,6 +359,94 @@ function PostCodePie({ from, to }: StatsProps) {
   )
 }
 
+function CityTop5Pie({ from, to }: StatsProps) {
+  const events = useAppSelector((state) =>
+    selectEventDateSlice(state, from, to)
+  )
+  const postCodes = useAppSelector(selectAllPostCode)
+  const cities = useAppSelector(selectCityEntities)
+  const count = Object.keys(cities).reduce(
+    (storage: { [id: string]: number }, id: string) => {
+      storage[id] = 0
+      return storage
+    },
+    {}
+  )
+  for (const event of events) {
+    const city = cities[event.city]
+    if (city) {
+      count[city.id] += 1
+    }
+  }
+  const l = Object.entries(count)
+  l.sort((a, b) => b[1] - a[1]) // Sort in desc order
+  const top5 = l.slice(0, 5)
+  const data: Array<PieValue> = []
+  for (const [id, value] of top5) {
+    const city = cities[id]
+    if (city) {
+      // Normally not necessary but typescript...
+      data.push({ id: city.name, value: value })
+    }
+  }
+
+  const colors = [
+    amber[300],
+    cyan[300],
+    purple[300],
+    rose[300],
+    blueGray[300],
+  ].slice(0, data.length)
+
+  return (
+    <Pie
+      data={data}
+      colors={colors}
+      title="Répartition par ville (top 5)"
+      legend={
+        <>
+          <div className="flex space-x-4 items-center">
+            {data.length > 0 && (
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-8 bg-amber-300"></div>
+                <div className="text-sm text-blueGray-700">{data[0].id}</div>
+              </div>
+            )}
+            {data.length > 1 && (
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-8 bg-cyan-300"></div>
+                <div className="text-sm text-blueGray-700">{data[1].id}</div>
+              </div>
+            )}
+          </div>
+          <div className="flex space-x-4 items-center">
+            {data.length > 2 && (
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-8 bg-purple-300"></div>
+                <div className="text-sm text-blueGray-700">{data[2].id}</div>
+              </div>
+            )}
+            {data.length > 3 && (
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-8 bg-rose-300"></div>
+                <div className="text-sm text-blueGray-700">{data[3].id}</div>
+              </div>
+            )}
+          </div>
+          <div className="flex space-x-4 items-center">
+            {data.length > 4 && (
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-8 bg-blueGray-300"></div>
+                <div className="text-sm text-blueGray-700">{data[4].id}</div>
+              </div>
+            )}
+          </div>
+        </>
+      }
+    />
+  )
+}
+
 export default function StatPage() {
   return (
     <div className="my-8 w-full">
@@ -372,7 +460,8 @@ export default function StatPage() {
         <KindPie from="2021-01-01" to="2021-12-31" />
         <GenderPie from="2021-01-01" to="2021-12-31" />
         <AgePie from="2021-01-01" to="2021-12-31" />
-        <PostCodePie from="2021-11-01" to="2021-12-31" />
+        <PostCodePie from="2021-01-01" to="2021-12-31" />
+        <CityTop5Pie from="2021-01-01" to="2021-12-31" />
       </div>
     </div>
   )
