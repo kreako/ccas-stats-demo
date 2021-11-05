@@ -14,6 +14,7 @@ import {
   parseISO,
 } from "date-fns"
 import chance from "chance"
+import { selectAllPostCode } from "../city/citySlice"
 
 export type EventKind = "passage" | "mail" | "phone"
 export type EventGender = "male" | "female" | "x"
@@ -174,6 +175,22 @@ export const selectEventSlice = createSelector(
     (state: RootState, start: number, end: number) => [start, end],
   ],
   (events: Array<EventType>, [start, end]) => events.slice(start, end)
+)
+
+export const selectEventDateSlice = createSelector(
+  [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
+  (events: Array<EventType>, [from, to]) => {
+    const fromDt = parseISO(from)
+    const toDt = parseISO(to)
+    const slice: Array<EventType> = []
+    for (const event of events) {
+      const dt = parseISO(event.date)
+      if (fromDt <= dt && dt <= toDt) {
+        slice.push(event)
+      }
+    }
+    return slice
+  }
 )
 
 export const selectEventCountPerDate = createSelector(
