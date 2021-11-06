@@ -181,7 +181,7 @@ export const selectEventDateSlice = createSelector(
   [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
   (events: Array<EventType>, [from, to]) => {
     const fromDt = parseISO(from)
-    const toDt = parseISO(to)
+    const toDt = addDays(parseISO(to), 1) // end of the last day is the beginning of the next one (at 00:00:00)
     const slice: Array<EventType> = []
     for (const event of events) {
       const dt = parseISO(event.date)
@@ -197,7 +197,9 @@ export const selectEventCountPerDate = createSelector(
   [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
   (events: Array<EventType>, [from, to]) => {
     const fromDt = parseISO(from)
-    const toDt = parseISO(to)
+    // TODO this is a mess this 5x copy-paste
+    // Move this logic out of the store into an adapter module somewhere
+    const toDt = addDays(parseISO(to), 1) // end of the last day is the beginning of the next one (at 00:00:00)
     // keep for each date in the period the count
     const count: { [dt: string]: number } = {}
     for (const event of events) {
@@ -219,7 +221,7 @@ export const selectEventGenderPerDate = createSelector(
   [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
   (events: Array<EventType>, [from, to]) => {
     const fromDt = parseISO(from)
-    const toDt = parseISO(to)
+    const toDt = addDays(parseISO(to), 1) // end of the last day is the beginning of the next one (at 00:00:00)
     const count = { female: 0, male: 0, other: 0 }
     for (const event of events) {
       const dt = parseISO(event.date)
@@ -241,7 +243,7 @@ export const selectEventKindPerDate = createSelector(
   [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
   (events: Array<EventType>, [from, to]) => {
     const fromDt = parseISO(from)
-    const toDt = parseISO(to)
+    const toDt = addDays(parseISO(to), 1) // end of the last day is the beginning of the next one (at 00:00:00)
     const count = { passage: 0, phone: 0, mail: 0 }
     for (const event of events) {
       const dt = parseISO(event.date)
@@ -263,7 +265,7 @@ export const selectEventAgePerDate = createSelector(
   [selectAllEvents, (state: RootState, from: string, to: string) => [from, to]],
   (events: Array<EventType>, [from, to]) => {
     const fromDt = parseISO(from)
-    const toDt = parseISO(to)
+    const toDt = addDays(parseISO(to), 1) // end of the last day is the beginning of the next one (at 00:00:00)
     const count = {
       "0-14": 0,
       "15-24": 0,
