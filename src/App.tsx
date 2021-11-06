@@ -5,7 +5,7 @@ import StatPage from "./features/stat/Stat"
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/ccas-demo">
       <NavBar />
       <Switch>
         <Route exact path="/">
