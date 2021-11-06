@@ -1,6 +1,16 @@
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { ResponsivePie } from "@nivo/pie"
 import {
+  endOfMonth,
+  endOfYear,
+  formatISO,
+  parseISO,
+  startOfMonth,
+  startOfYear,
+  subDays,
+} from "date-fns"
+import { Dispatch, useReducer } from "react"
+import {
   amber,
   blue,
   blueGray,
@@ -447,21 +457,190 @@ function CityTop5Pie({ from, to }: StatsProps) {
   )
 }
 
+type YearPeriod = {
+  year: number
+}
+
+type MonthPeriod = {
+  year: number
+  month: number
+}
+
+type LastNDaysPeriod = {
+  last: string
+  n: number
+}
+
+type PeriodType = {
+  kind: "year" | "month" | "lastNDays"
+  period: YearPeriod | MonthPeriod | LastNDaysPeriod
+}
+
+type Action =
+  | { type: "year"; payload: YearPeriod }
+  | { type: "month"; payload: MonthPeriod }
+  | { type: "lastNDays"; payload: LastNDaysPeriod }
+
+function periodReducer(state: PeriodType, action: Action): PeriodType {
+  switch (action.type) {
+    case "year":
+      return { kind: "year", period: action.payload }
+    case "month":
+      return { kind: "month", period: action.payload }
+    case "lastNDays":
+      return { kind: "lastNDays", period: action.payload }
+    default:
+      throw new Error()
+  }
+}
+
+const defaultPeriod = (): PeriodType => {
+  const d = new Date()
+  const year = d.getFullYear()
+  return {
+    kind: "year",
+    period: { year },
+  }
+}
+
+const startEndDateFromPeriod = (period: PeriodType): [string, string] => {
+  switch (period.kind) {
+    case "year": {
+      const p = period.period as YearPeriod
+      const inPeriod = new Date(p.year, 5, 15)
+      const start = formatISO(startOfYear(inPeriod), { representation: "date" })
+      const end = formatISO(endOfYear(inPeriod), { representation: "date" })
+      return [start, end]
+    }
+    case "month": {
+      const p = period.period as MonthPeriod
+      const inPeriod = new Date(p.year, p.month, 15)
+      const start = formatISO(startOfMonth(inPeriod), {
+        representation: "date",
+      })
+      const end = formatISO(endOfMonth(inPeriod), { representation: "date" })
+      return [start, end]
+    }
+    case "lastNDays": {
+      const p = period.period as LastNDaysPeriod
+      const d = parseISO(p.last)
+      // substract 1 day from n so n = 1 is only 1 day
+      const start = formatISO(subDays(d, p.n - 1), { representation: "date" })
+      const end = formatISO(d, { representation: "date" })
+      return [start, end]
+    }
+  }
+}
+
+const monthDisplay = (month: number) =>
+  [
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
+  ][month]
+
+const dayDisplay = (day: number) =>
+  ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][day]
+
+type TimePeriodDisplayProps = {
+  from: string
+  to: string
+  period: PeriodType
+}
+
+function TimePeriodDisplay({ period, from, to }: TimePeriodDisplayProps) {
+  switch (period.kind) {
+    case "year": {
+      const p = period.period as YearPeriod
+      return (
+        <div className="flex space-x-2">
+          <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
+            Année {p.year}
+          </div>
+          <div className="text-xs text-sky-900">
+            (de {from} à {to})
+          </div>
+        </div>
+      )
+    }
+    case "month": {
+      const p = period.period as MonthPeriod
+      return (
+        <div className="flex space-x-2">
+          <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
+            Mois {monthDisplay(p.month)} {p.year}
+          </div>
+          <div className="text-xs text-sky-900">
+            (de {from} à {to})
+          </div>
+        </div>
+      )
+    }
+    case "lastNDays": {
+      const p = period.period as LastNDaysPeriod
+      return (
+        <div className="flex space-x-2">
+          <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
+            {p.n} jours
+          </div>
+          <div className="text-xs text-sky-900">
+            (de {from} à {to})
+          </div>
+        </div>
+      )
+    }
+  }
+}
+
+type TimePeriodSelectorProps = {
+  from: string
+  to: string
+  period: PeriodType
+  dispatch: Dispatch<Action>
+}
+
+function TimePeriodSelector({
+  from,
+  to,
+  period,
+  dispatch,
+}: TimePeriodSelectorProps) {
+  return (
+    <div className="ml-2 md:ml-4 lg:ml-8 xl:ml-16">
+      <TimePeriodDisplay from={from} to={to} period={period} />
+    </div>
+  )
+}
+
 export default function StatPage() {
+  const [period, dispatch] = useReducer(periodReducer, defaultPeriod())
+  const [start, end] = startEndDateFromPeriod(period)
   return (
     <div className="my-8 w-full">
-      <div className="uppercase tracking-wider text-xs font-bold text-sky-900 ml-2 md:ml-4 lg:ml-8 xl:ml-16">
-        Calendrier
-      </div>
+      <TimePeriodSelector
+        from={start}
+        to={end}
+        period={period}
+        dispatch={dispatch}
+      />
       <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-16 px-1">
         <div className="col-span-1 lg:col-span-2 xl:col-span-3">
-          <EventCalendar from="2021-01-01" to="2021-12-31" />
+          <EventCalendar from={start} to={end} />
         </div>
-        <KindPie from="2021-01-01" to="2021-12-31" />
-        <GenderPie from="2021-01-01" to="2021-12-31" />
-        <AgePie from="2021-01-01" to="2021-12-31" />
-        <PostCodePie from="2021-01-01" to="2021-12-31" />
-        <CityTop5Pie from="2021-01-01" to="2021-12-31" />
+        <KindPie from={start} to={end} />
+        <GenderPie from={start} to={end} />
+        <AgePie from={start} to={end} />
+        <PostCodePie from={start} to={end} />
+        <CityTop5Pie from={start} to={end} />
       </div>
     </div>
   )
