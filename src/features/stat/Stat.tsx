@@ -1,3 +1,4 @@
+import { PencilIcon } from "@heroicons/react/solid"
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { ResponsivePie } from "@nivo/pie"
 import {
@@ -8,8 +9,9 @@ import {
   startOfMonth,
   startOfYear,
   subDays,
+  subMonths,
 } from "date-fns"
-import { Dispatch, useReducer } from "react"
+import { Dispatch, useReducer, useState } from "react"
 import {
   amber,
   blue,
@@ -23,6 +25,8 @@ import {
   sky,
 } from "tailwindcss/colors"
 import { useAppSelector } from "../../app/hooks"
+import { Group, GroupOption } from "../../ui/RadioGroup"
+import useBoolean from "../../utils/useBoolean"
 import { selectAllPostCode, selectCityEntities } from "../city/citySlice"
 import {
   selectEventAgePerDate,
@@ -532,21 +536,22 @@ const startEndDateFromPeriod = (period: PeriodType): [string, string] => {
   }
 }
 
-const monthDisplay = (month: number) =>
-  [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ][month]
+const MONTHS = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+]
+
+const monthDisplay = (month: number) => MONTHS[month]
 
 const dayDisplay = (day: number) =>
   ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][day]
@@ -555,50 +560,157 @@ type TimePeriodDisplayProps = {
   from: string
   to: string
   period: PeriodType
+  edit: () => void
 }
 
-function TimePeriodDisplay({ period, from, to }: TimePeriodDisplayProps) {
+function TimePeriodDisplay({ period, from, to, edit }: TimePeriodDisplayProps) {
   switch (period.kind) {
     case "year": {
       const p = period.period as YearPeriod
       return (
-        <div className="flex space-x-2">
+        <button onClick={edit} className="flex space-x-2 items-center">
           <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
             Année {p.year}
           </div>
           <div className="text-xs text-sky-900">
             (de {from} à {to})
           </div>
-        </div>
+          <PencilIcon className="h-3 w-3 text-sky-700" />
+        </button>
       )
     }
     case "month": {
       const p = period.period as MonthPeriod
       return (
-        <div className="flex space-x-2">
+        <button onClick={edit} className="flex space-x-2 items-center">
           <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
             Mois {monthDisplay(p.month)} {p.year}
           </div>
           <div className="text-xs text-sky-900">
             (de {from} à {to})
           </div>
-        </div>
+          <PencilIcon className="h-3 w-3 text-sky-700" />
+        </button>
       )
     }
     case "lastNDays": {
       const p = period.period as LastNDaysPeriod
       return (
-        <div className="flex space-x-2">
+        <button onClick={edit} className="flex space-x-2 items-center">
           <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
             {p.n} jours
           </div>
           <div className="text-xs text-sky-900">
             (de {from} à {to})
           </div>
-        </div>
+          <PencilIcon className="h-3 w-3 text-sky-700" />
+        </button>
       )
     }
   }
+}
+
+type TimePeriodSelectProps = {
+  dispatch: Dispatch<Action>
+}
+
+function TimePeriodSelect({ dispatch }: TimePeriodSelectProps) {
+  const [dontCare, _] = useState(null)
+  // year things
+  const year = new Date().getFullYear()
+  const years = [...Array(5).keys()].reverse().map((x) => (year - x).toString())
+  const setYear = (year: string) => {
+    dispatch({ type: "year", payload: { year: Number(year) } })
+  }
+  // month things
+  const currentMonth = startOfMonth(new Date())
+  const months = [...Array(12).keys()]
+    .reverse()
+    .map((x) =>
+      formatISO(subMonths(currentMonth, x), { representation: "date" })
+    )
+  const monthLabel = (month: string) => {
+    const dt = parseISO(month)
+    return `${monthDisplay(dt.getMonth())} ${dt.getFullYear()}`
+  }
+  const setMonth = (month: string) => {
+    const dt = parseISO(month)
+    dispatch({
+      type: "month",
+      payload: { year: dt.getFullYear(), month: dt.getMonth() },
+    })
+  }
+  // other things
+  const setOther = (other: string) => {
+    const dt = new Date() // For now only from today
+    dispatch({
+      type: "lastNDays",
+      payload: {
+        last: formatISO(dt, { representation: "date" }),
+        n: Number(other),
+      },
+    })
+  }
+  return (
+    <div className="mt-2 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-16 px-1">
+      <div className="w-96">
+        <div className="font-bold mt-8">Par année</div>
+        <Group value={dontCare} onChange={setYear} label="L'année à afficher">
+          <div className="mt-2 flex flex-col space-y-2">
+            {years.map((y) => (
+              <GroupOption key={y} bg="bg-teal-200" label={y} value={y} />
+            ))}
+          </div>
+        </Group>
+      </div>
+      <div className="w-96">
+        <div className="font-bold mt-8">Par mois</div>
+        <Group value={dontCare} onChange={setMonth} label="Le mois à afficher">
+          <div className="mt-2 flex flex-col space-y-2">
+            {months.map((m) => (
+              <GroupOption
+                key={m}
+                bg="bg-sky-200"
+                label={monthLabel(m)}
+                value={m}
+              />
+            ))}
+          </div>
+        </Group>
+      </div>
+      <div className="w-96">
+        <div className="font-bold mt-8">Autre</div>
+        <Group
+          value={dontCare}
+          onChange={setOther}
+          label="La période à afficher"
+        >
+          <div className="mt-2 flex flex-col space-y-2">
+            <GroupOption
+              bg="bg-rose-200"
+              label="Les 7 derniers jours"
+              value="7"
+            />
+            <GroupOption
+              bg="bg-rose-200"
+              label="Les 14 derniers jours"
+              value="14"
+            />
+            <GroupOption
+              bg="bg-rose-200"
+              label="Les 31 derniers jours"
+              value="31"
+            />
+            <GroupOption
+              bg="bg-rose-200"
+              label="Les 100 derniers jours"
+              value="100"
+            />
+          </div>
+        </Group>
+      </div>
+    </div>
+  )
 }
 
 type TimePeriodSelectorProps = {
@@ -614,9 +726,15 @@ function TimePeriodSelector({
   period,
   dispatch,
 }: TimePeriodSelectorProps) {
+  const { value: inEdit, toggle: edit, setFalse: exitEdit } = useBoolean(false)
+  const myDispatch = (action: Action): void => {
+    dispatch(action)
+    exitEdit()
+  }
   return (
     <div className="ml-2 md:ml-4 lg:ml-8 xl:ml-16">
-      <TimePeriodDisplay from={from} to={to} period={period} />
+      <TimePeriodDisplay from={from} to={to} period={period} edit={edit} />
+      {inEdit && <TimePeriodSelect dispatch={myDispatch} />}
     </div>
   )
 }
