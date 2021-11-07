@@ -57,7 +57,7 @@ function EventCalendar({ from, to }: StatsProps) {
         />
       </div>
       <div className="flex flex-col items-center">
-        <div className="text-blueGray-700">Nombres de visites par jour</div>
+        <div className="text-blueGray-700">Nombre de visites par jour</div>
         <div className="text-xs text-blueGray-700">
           du plus fréquenté (en foncé) au moins fréquenté (en clair)
         </div>
