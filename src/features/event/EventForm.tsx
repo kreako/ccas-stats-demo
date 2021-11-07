@@ -1,5 +1,4 @@
 import { Dispatch, useReducer } from "react"
-import { RadioGroup } from "@headlessui/react"
 import { PencilIcon } from "@heroicons/react/solid"
 import {
   EventKind,
@@ -15,6 +14,7 @@ import {
   selectCityByPostCode,
 } from "../city/citySlice"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { Group, GroupOption } from "../../ui/RadioGroup"
 
 type CheckIconProps = {
   className: string
@@ -35,33 +35,6 @@ function CheckIcon(props: CheckIconProps) {
   )
 }
 
-type GroupOptionProps = {
-  bg: string
-  label: string
-  value: string
-}
-
-function GroupOption({ bg, label, value }: GroupOptionProps) {
-  return (
-    <div
-      className={`py-2 px-4 ${bg} rounded-md shadow-md font-bold cursor-pointer`}
-    >
-      <RadioGroup.Option value={value}>
-        {({ checked }) => (
-          <div className="flex flex-row w-64">
-            <div className="flex-grow">{label}</div>
-            {checked && (
-              <div className="flex-shrink-0">
-                <CheckIcon className="w-6 h-6" />
-              </div>
-            )}
-          </div>
-        )}
-      </RadioGroup.Option>
-    </div>
-  )
-}
-
 type KindGroupProps = {
   kind: EventKind | null
   setKind: (k: EventKind) => void
@@ -70,16 +43,13 @@ type KindGroupProps = {
 function KindGroup({ kind, setKind }: KindGroupProps) {
   return (
     <div className="flex justify-center py-6 space-x-2">
-      <RadioGroup value={kind} onChange={setKind}>
-        <RadioGroup.Label className="sr-only">
-          Le type d'évènement
-        </RadioGroup.Label>
+      <Group value={kind} onChange={setKind} label="Le type d'évènement">
         <div className="flex flex-col space-y-4">
           <GroupOption bg="bg-amber-200" label="Passage" value="passage" />
           <GroupOption bg="bg-cyan-200" label="Téléphone" value="phone" />
           <GroupOption bg="bg-purple-200" label="Email" value="mail" />
         </div>
-      </RadioGroup>
+      </Group>
     </div>
   )
 }
@@ -92,16 +62,13 @@ type GenderGroupProps = {
 function GenderGroup({ gender, setGender }: GenderGroupProps) {
   return (
     <div className="flex justify-center py-6 space-x-2">
-      <RadioGroup value={gender} onChange={setGender}>
-        <RadioGroup.Label className="sr-only">
-          Le genre du visiteur
-        </RadioGroup.Label>
+      <Group value={gender} onChange={setGender} label="Le genre du visiteur">
         <div className="flex flex-col space-y-4">
           <GroupOption bg="bg-blue-200" label="Homme" value="male" />
           <GroupOption bg="bg-pink-200" label="Femme" value="female" />
           <GroupOption bg="bg-blueGray-200" label="Autre" value="x" />
         </div>
-      </RadioGroup>
+      </Group>
     </div>
   )
 }
@@ -114,10 +81,7 @@ type AgeGroupProps = {
 function AgeGroup({ age, setAge }: AgeGroupProps) {
   return (
     <div className="flex justify-center py-6 space-x-2">
-      <RadioGroup value={age} onChange={setAge}>
-        <RadioGroup.Label className="sr-only">
-          L'age du visiteur
-        </RadioGroup.Label>
+      <Group value={age} onChange={setAge} label="L'age du visiteur">
         <div className="flex flex-col space-y-4">
           <GroupOption
             bg="bg-amber-100"
@@ -160,7 +124,7 @@ function AgeGroup({ age, setAge }: AgeGroupProps) {
             value="75-+"
           />
         </div>
-      </RadioGroup>
+      </Group>
     </div>
   )
 }
@@ -192,10 +156,7 @@ function CityGroup({ city, setCity }: CityGroupProps) {
 
   return (
     <div className="flex justify-center py-6 space-x-2">
-      <RadioGroup value={city} onChange={setCity}>
-        <RadioGroup.Label className="sr-only">
-          La ville du visiteur
-        </RadioGroup.Label>
+      <Group value={city} onChange={setCity} label="La ville du visiteur">
         {postCodes.map((pc) => (
           <div key={pc} className="flex flex-col space-y-4">
             <div className="font-bold mt-8">{pc}</div>
@@ -207,7 +168,7 @@ function CityGroup({ city, setCity }: CityGroupProps) {
           <div className="font-bold mt-8">Autre</div>
           <GroupOption bg="bg-teal-200" label="Autre" value={OTHER_ID} />
         </div>
-      </RadioGroup>
+      </Group>
     </div>
   )
 }
