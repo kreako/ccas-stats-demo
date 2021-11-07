@@ -750,7 +750,7 @@ export default function StatPage() {
         period={period}
         dispatch={dispatch}
       />
-      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-16 px-1">
+      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-48 px-1">
         <div className="col-span-1 lg:col-span-2 xl:col-span-3">
           <EventCalendar from={start} to={end} />
         </div>
