@@ -10,6 +10,7 @@ import {
   addBusinessDays,
   addDays,
   formatISO,
+  isSunday,
   isWeekend,
   parseISO,
 } from "date-fns"
@@ -118,8 +119,12 @@ export const generateEvent = createAsyncThunk(
           date: d.toISOString(),
         })
       }
-      // Go to the next business day
-      dt = addBusinessDays(dt, 1)
+      // Go to the next day
+      dt = addDays(dt, 1)
+      if (isSunday(dt)) {
+        // no activity on sunday
+        dt = addDays(dt, 1)
+      }
     }
     return events
   }
