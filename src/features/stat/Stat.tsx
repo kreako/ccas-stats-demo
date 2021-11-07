@@ -42,6 +42,23 @@ type StatsProps = {
   to: string
 }
 
+function EventCount({ from, to }: StatsProps) {
+  const data = useAppSelector((state) => selectEventDateSlice(state, from, to))
+  const count = data.length
+  return (
+    <div className="flex flex-col space-y-1 items-center w-full">
+      <div className="flex flex-grow w-full h-48 lg:h-64 xl:h-72  justify-center items-center">
+        <div className="font-bold text-5xl font-mono text-sky-900">{count}</div>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="text-blueGray-700">
+          Nombre total de visites sur la période
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventCalendar({ from, to }: StatsProps) {
   const data = useAppSelector((state) =>
     selectEventCountPerDate(state, from, to)
@@ -751,6 +768,9 @@ export default function StatPage() {
         dispatch={dispatch}
       />
       <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-48 px-1">
+        <div className="col-span-1 lg:col-span-2 xl:col-span-3">
+          <EventCount from={start} to={end} />
+        </div>
         <div className="col-span-1 lg:col-span-2 xl:col-span-3">
           <EventCalendar from={start} to={end} />
         </div>
