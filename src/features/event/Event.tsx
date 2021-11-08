@@ -105,7 +105,7 @@ export default function EventPage() {
       <CenterAlign>
         <NewEventForm />
       </CenterAlign>
-      <div className="my-24"></div>
+      <div className="my-48"></div>
       <CenterAlign>
         <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
           Les dernières visites
