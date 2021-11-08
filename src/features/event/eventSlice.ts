@@ -62,9 +62,9 @@ export const generateEvent = createAsyncThunk(
     // Generate events for each business days of the year
     const year = new Date().getFullYear()
     const now = new Date()
-    let dt = new Date(year, 0, 1)
-    // go to the first non-week-end day
-    while (isWeekend(dt)) {
+    let dt = new Date(year - 1, 0, 1)
+    // go to the first non-sunday day
+    while (isSunday(dt)) {
       dt = addDays(dt, 1)
     }
     while (dt <= now) {
@@ -86,7 +86,7 @@ export const generateEvent = createAsyncThunk(
         const minute = randInt(59)
         const second = randInt(59)
         const d = new Date(
-          year,
+          dt.getFullYear(),
           dt.getMonth(),
           dt.getDate(),
           hour,
