@@ -368,7 +368,7 @@ export default function NewEventForm() {
   }
 
   return (
-    <div className="w-96">
+    <div className="w-80">
       <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
         Ajouter une nouvelle visite
       </div>

@@ -670,7 +670,7 @@ function TimePeriodSelect({ dispatch }: TimePeriodSelectProps) {
   }
   return (
     <div className="mt-2 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-16 px-1">
-      <div className="w-96">
+      <div className="w-80">
         <div className="font-bold mt-8">Par année</div>
         <Group value={dontCare} onChange={setYear} label="L'année à afficher">
           <div className="mt-2 flex flex-col space-y-2">
@@ -680,7 +680,7 @@ function TimePeriodSelect({ dispatch }: TimePeriodSelectProps) {
           </div>
         </Group>
       </div>
-      <div className="w-96">
+      <div className="w-80">
         <div className="font-bold mt-8">Par mois</div>
         <Group value={dontCare} onChange={setMonth} label="Le mois à afficher">
           <div className="mt-2 flex flex-col space-y-2">
@@ -695,7 +695,7 @@ function TimePeriodSelect({ dispatch }: TimePeriodSelectProps) {
           </div>
         </Group>
       </div>
-      <div className="w-96">
+      <div className="w-80">
         <div className="font-bold mt-8">Autre</div>
         <Group
           value={dontCare}
@@ -760,14 +760,14 @@ export default function StatPage() {
   const [period, dispatch] = useReducer(periodReducer, defaultPeriod())
   const [start, end] = startEndDateFromPeriod(period)
   return (
-    <div className="my-8 w-full">
+    <div className="my-6 w-full">
       <TimePeriodSelector
         from={start}
         to={end}
         period={period}
         dispatch={dispatch}
       />
-      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-48 px-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 flex-grow-0 gap-x-8 gap-y-48 px-1">
         <div className="col-span-1 lg:col-span-2 xl:col-span-3">
           <EventCount from={start} to={end} />
         </div>

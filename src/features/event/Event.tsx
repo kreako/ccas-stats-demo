@@ -91,7 +91,7 @@ function EventList() {
   return (
     <>
       {events.map((e) => (
-        <div key={e.id} className="w-96">
+        <div key={e.id} className="w-80">
           <Event event={e} />
         </div>
       ))}
