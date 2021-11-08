@@ -110,7 +110,7 @@ export default function EventPage() {
         <div className="uppercase tracking-wider text-xs font-bold text-sky-900">
           Les dernières visites
         </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow-0 gap-8">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-8">
           <EventList />
         </div>
       </CenterAlign>
