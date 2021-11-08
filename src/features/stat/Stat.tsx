@@ -96,6 +96,22 @@ type PieProps = {
 }
 
 function Pie({ data, colors, legend, title }: PieProps) {
+  const total = data.reduce((count: number, x: PieValue) => {
+    count += x.value
+    return count
+  }, 0)
+  if (total === 0) {
+    return (
+      <div className="flex flex-col space-y-4 items-center">
+        <div className="flex flex-grow w-full h-64 lg:h-64 xl:h-96 items-center justify-center">
+          <div className="font-mono text-sky-900">
+            Aucune donnée pour cette période
+          </div>
+        </div>
+        <div className="text-blueGray-700">{title}</div>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col space-y-4 items-center">
       <div className="flex-grow w-full h-64 lg:h-64 xl:h-96">
